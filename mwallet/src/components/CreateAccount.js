@@ -31,7 +31,7 @@ function CreateAccount({setWallet, setSeedPhrase}) {
           </div>
         </div>
         <Button
-          className="frontPageButton"
+          className="w-[90%] h-[4vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
           type="primary"
           onClick={() => generateWallet()}
         >
@@ -41,8 +41,8 @@ function CreateAccount({setWallet, setSeedPhrase}) {
           {newSeedPhrase && <pre style={{ whiteSpace: "pre-wrap" }}>{newSeedPhrase}</pre>}
         </Card>
         <Button
-          className="frontPageButton"
-          type="default"
+          type="primary"
+          className="w-[90%] h-[4vh] hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
           onClick={() => setWalletAndMnemonic()}
         >
           Open Your New Wallet

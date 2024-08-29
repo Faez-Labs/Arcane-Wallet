@@ -1,6 +1,6 @@
 import "./App.css";
 import { useState } from 'react'
-import logo from './logo.png'
+import logo from './logo_arcane.svg'
 import { Select } from 'antd'
 import {Routes, Route} from 'react-router-dom'
 import Home from "./components/Home"
@@ -15,34 +15,29 @@ function App() {
   const [selectedChain, setSelectedChain] = useState("0x1");
 
   return (
-    <div className="App">
-      <header>
-        <img src={logo} className="headerLogo" alt="logo"/>
-        <Select
+    <div className="App bg-[#222222]">
+      <div className="flex flex-row justify-center align-middle ">
+          <img src={logo} className="headerLogo" alt="logo"/>
+      </div>
+      {/* <header className="bg-neutral-800">
+        
+         <Select
           value={selectedChain}
           onChange={(val) => setSelectedChain(val)}
           options={[
             {
-              label: "Ethereum",
+              label: "CrossFi Testnet",
               value: "0x1" // The value here is the hex value of every testnet
             },
             {
-              label: "Mumbai Testnet",
+              label: "Solana Devnet",
               value: "0x13881"
-            },
-            {
-              label: "Polygon",
-              value: "0x89"
-            },
-            {
-              label: "Avalanche",
-              value: "0xa86a"
-            },
+            }
           ]}
           className="dropdown"
         >
         </Select>
-      </header>
+      </header> */}
       {wallet && seedPhrase ? 
       <Routes>
         <Route path="/yourwallet" element={<WalletView

@@ -10,29 +10,28 @@ function Home() {
   return (
     <>
       <div className="content">
-        {/* <img src={mwallet} alt="logo" className="frontPageLogo" /> */}
-        <h2> Hey there 👋 </h2>
-        <h4 className="h4">Welcome to your Web3 Wallet</h4>
-        <Button
-          onClick={() => navigate('/yourwallet')}
-          className="frontPageButton"
-          type="primary"
-        >
-        Create A Wallet
-        </Button>
-        <Button
-          onClick={() => navigate('/recover')}
-          className="frontPageButton"
-          type="default"
-        >
-        Sign In With Seed Phrase    
-        </Button>  
-        <p className="frontPageBottom">
-          Find Alt Coin Gems: {" "}
-          <a href="https://moralismoney.com/" target="_blank" rel="noreferrer">
-            money.moralis.io
-          </a>
-        </p>
+        <h2 className="text-white font-bold text-[3rem]"> Arcane </h2>
+        <h4 className="text-[#999999] font-semi text-[1.2rem] ml-5 mr-5">Welcome to Arcane, start by creating a wallet</h4>
+        <div className="flex flex-col w-full justify-center items-center h-[50vh]">
+          <Button
+            onClick={() => navigate('/yourwallet')}
+            className="w-[90%] h-[4vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+            type="primary"
+          >
+          Create a Wallet
+          </Button>
+          <Button
+            onClick={() => navigate('/recover')}
+            className="w-[90%] h-[4vh] text-white bg-[#222222] border-[#222222] mt-5 text-[1.3rem]"
+            type="default"
+          >
+          Already have a Wallet   
+          </Button>  
+          
+        </div>
+          <p className="text-[#999999] self-center mb-5">
+            by Faez Labs
+          </p>
       </div>
     </>
   );
