@@ -4,3 +4,6 @@
 [submodule "blockchain/foundry-demo/lib/openzeppelin-foundry-upgrades"]
 	path = blockchain/foundry-demo/lib/openzeppelin-foundry-upgrades
 	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
+[submodule "blockchain/foundry-demo/lib/openzeppelin-contracts-upgradeable"]
+	path = blockchain/foundry-demo/lib/openzeppelin-contracts-upgradeable
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
