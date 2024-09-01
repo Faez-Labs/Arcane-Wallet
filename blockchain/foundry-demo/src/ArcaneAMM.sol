@@ -3,8 +3,10 @@ pragma solidity ^0.8.20;
 
 
 import "./ArcLPToken.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ArcaneAMM {
+contract ArcaneAMM is Pausable, Ownable {
     address public token0;
     address public token1;
     uint256 public reserve0;
@@ -15,7 +17,13 @@ contract ArcaneAMM {
     event AddLiquidity(address indexed provider, uint256 amount0, uint256 amount1, uint256 liquidity);
     event RemoveLiquidity(address indexed provider, uint256 amount0, uint256 amount1, uint256 liquidity);
 
-    constructor(address _token0, address _token1, string memory lpTokenName, string memory lpTokenSymbol) {
+    constructor(
+        address initialOwner,
+        address _token0,
+        address _token1,
+        string memory lpTokenName,
+        string memory lpTokenSymbol
+    ) Ownable(initialOwner) {
         token0 = _token0;
         token1 = _token1;
         lpToken = new ArcLPToken(lpTokenName, lpTokenSymbol);
@@ -101,5 +109,13 @@ contract ArcaneAMM {
 
     function min(uint256 x, uint256 y) internal pure returns (uint256 z) {
         z = x < y ? x : y;
+    }
+
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
     }
 }
