@@ -1,30 +1,23 @@
-const express = require('express');
-const { ethers } = require('ethers');
+import  express  from 'express'
+import { WebSocketProvider, Contract, formatEther } from 'ethers'; // Updated for ethers v6
+import fs from 'fs';
+import path from 'path';
+import dotenv from 'dotenv';
 
 const app = express();
 const port = 3000;
+dotenv.config()
+// Create a WebSocket provider for the Sepolia test network
+const provider = new WebSocketProvider(process.env.WSS_SEPOLIA);
 
-const provider = new ethers.providers.JsonRpcProvider("");
-const contractABI = [
- 
-];
-const contractAddress = "";
-const contract = new ethers.Contract(contractAddress, contractABI, provider);
+const contractABI = JSON.parse(fs.readFileSync(path.join("", 'contract.json'), 'utf8'));
+const contractAddress = "0x391cE92cf0fb6D66A737034d21dde6867457B607";
+const contract = new Contract(contractAddress, contractABI, provider); // Updated for ethers v6
 
 let events = [];
 
-contract.on("TokenSwapped", (sender, amount, destinationChain, event) => {
-  console.log(`Event detected from ${sender}`);
-  const formattedAmount = ethers.utils.formatEther(amount);
-
-  const eventData = {
-    sender,
-    amount: formattedAmount,
-    destinationChain,
-    txHash: event.transactionHash,
-  };
-
-  events.push(eventData);
+contract.on("Swap", (sender, receiver, ammount, event) => {
+  console.log(sender + receiver + ammount)
 });
 
 app.get('/events', (req, res) => {

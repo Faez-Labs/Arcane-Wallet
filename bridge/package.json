@@ -1,6 +1,13 @@
 {
+  "name": "arcane-bridge",
+  "version": "1.0.0",
+  "type": "module",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "ethers": "^6.13.2",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "web3": "^4.12.1"
   }
 }
