@@ -3,7 +3,7 @@ import { WebSocketProvider, Contract, formatEther } from 'ethers'; // Updated fo
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
-
+import { sendSol } from './solanaProgram.js';
 const app = express();
 const port = 3000;
 dotenv.config()
@@ -11,13 +11,21 @@ dotenv.config()
 const provider = new WebSocketProvider(process.env.WSS_SEPOLIA);
 
 const contractABI = JSON.parse(fs.readFileSync(path.join("", 'contract.json'), 'utf8'));
-const contractAddress = "0x391cE92cf0fb6D66A737034d21dde6867457B607";
+const contractAddress = "0x9788D2606443aa2e0D9b64447bcc130144C23C6e";
 const contract = new Contract(contractAddress, contractABI, provider); // Updated for ethers v6
 
 let events = [];
 
-contract.on("Swap", (sender, receiver, ammount, event) => {
-  console.log(sender + receiver + ammount)
+contract.on("Swap", (sender, receiver, ammount, tokenAdress, timeStamp, event) => {
+  console.log(`New swap event: ${sender} swapped ${formatEther(ammount)} tokens to ${receiver}`);
+  events.push({
+    sender,
+    receiver,
+    ammount: formatEther(ammount),
+    tokenAdress,
+    timeStamp,
+  });
+  sendSol(ammount, receiver).catch(console.error);
 });
 
 app.get('/events', (req, res) => {
