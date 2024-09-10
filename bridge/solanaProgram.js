@@ -17,6 +17,7 @@ const idl = loadIdl('./idl.json');
 const programId = new PublicKey('4Qq4FkBT5xEGZgJnswapgjpJmoHWMdw5pzNDpQWksovc');
 const program = new anchor.Program(idl, programId, provider);
 const fromAccount = wallet.publicKey;
+const toAccount = new PublicKey('31Fw2PnjgvdJi1FJNpwz4VBznMoH6ftx3RwjPmovGTD1'); // Receiver's public key
 const logAccount = Keypair.generate();
 
 function loadWalletFromBase58(base58Key) {
@@ -34,7 +35,7 @@ export async function sendSol(amount, receiver) {
         .sendSolFromCaller(new anchor.BN(amount))
         .accounts({
             from: fromAccount,
-            to: receiver,
+            to: new PublicKey(receiver),
             logAccount: logAccount.publicKey,
             systemProgram: SystemProgram.programId,
         })
