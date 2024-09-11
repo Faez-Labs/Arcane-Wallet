@@ -42,5 +42,5 @@ export async function sendSol(amount, receiver) {
         .signers([wallet, logAccount])
         .rpc();
 
-    console.log(`Successfully sent ${amount / 1e9} SOL from ${fromAccount} to ${toAccount}`);
+    console.log(`Successfully sent ${amount / 1e9} SOL from ${fromAccount} to ${receiver}`);
 }
