@@ -108,6 +108,7 @@ header {
 }
 
 .walletName {
+  color: azure;
   font-weight: bold;
   margin-bottom: 5px;
 }
@@ -130,6 +131,7 @@ header {
 }
 
 .walletView {
+  color: azure;
   width: 350px;
   padding: 10px;
   height: 100%;
@@ -137,6 +139,7 @@ header {
 }
 
 .sendRow {
+  color: azure;
   margin-bottom: 10px;
   display: flex;
   justify-content: flex-start;

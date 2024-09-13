@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import logo from "../logo_arcane.svg";
 import axios from 'axios';
 import { CHAINS_CONFIG } from '../chains';
-import { ethers } from 'ethers';
-
+import { ethers, Contract, formatEther  } from 'ethers';
+import erc20Abi from '../erc20.json';
 
 function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain,}) {
  
@@ -29,6 +29,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
           {tokens ? (
             <>
               <List
+                className="text-white"
                 bordered
                 itemLayout="horizontal"
                 dataSource={tokens}
@@ -39,10 +40,9 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
                       title={item.symbol}
                       description={item.name}
                     />
-                    <div>
+                    <div className="text-white">
                       {(
-                        Number(item.balance) /
-                        10 ** Number(item.decimals)
+                        Number(item.balance)
                       ).toFixed(2)}{" "}
                       Tokens
                     </div>
@@ -53,36 +53,6 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
           ) : (
             <>
               <span>You seem to not have any tokens yet</span>
-            </>
-          )}
-        </>
-      ),
-    },
-    {
-      key: "2",
-      label: `NFTs`,
-      children: (
-        <>
-          {nfts ? (
-            <>
-              {nfts.map((e, i) => {
-                return (
-                  <>
-                    {e && (
-                      <img
-                        key={i}
-                        className="nftImage"
-                        alt="nftImage"
-                        src={e}
-                      />
-                    )}
-                  </>
-                );
-              })}
-            </>
-          ) : (
-            <>
-              <span>You seem to not have any NFTs yet</span>
             </>
           )}
         </>
@@ -175,26 +145,40 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
 
   async function getAccountTokens(){
     setFetching(true)
-    const res = await axios.get(`http://localhost:3001/getTokens`, {
-      params: {
-        userAddress: wallet,
-        chain: selectedChain,
-      },
-    });
-
-    const response = res.data;
-
-    if (response.tokens.length > 0) {
-      setTokens(response.tokens);
+    const crossFiRPC = "https://rpc.testnet.ms";
+    const provider = new ethers.JsonRpcProvider(crossFiRPC);
+    const contractAddress = "0xdb5c548684221ce2f55f16456ec5cf43a028d8e9";
+    const tokenContract = new Contract(contractAddress, erc20Abi, provider); 
+    const balance = await tokenContract.balanceOf(wallet);
+    const symbol = await tokenContract.symbol();
+    const decimals = await tokenContract.decimals();
+    const url = `https://api.covalenthq.com/v1/crossfi-evm-testnet/address/${wallet}/balances_v2/`;
+    try {
+      const apiKey = "cqt_rQKvDVYp7GpH9FGx6jh8kpDHcxgC";
+      const response = await axios.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        auth: {
+          username: apiKey,
+          password: '',  // Empty password because colon is used
+        }
+      });
+      const items = response.data.data.items;
+      const formattedBalances = items.map(item => ({
+        symbol: item.contract_ticker_symbol,
+        balance: item.balance / Math.pow(10, item.contract_decimals),
+        logo: item.token_logo_url,
+        address: item.contract_address,
+        decimals: item.contract_decimals,
+      }));
+      setTokens(formattedBalances);
+      setFetching(false);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      //setLoading(false);
     }
-
-
-    if (response.nfts.length > 0) {
-      setNfts(response.nfts);
-    }
-
-    setBalance(response.balance);
-    setFetching(false);
   }
 
 
@@ -233,7 +217,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
         </div>
         <div className="walletName">Wallet</div>
         <Tooltip title={wallet}>
-          <div>
+          <div className="text-white">
             {wallet.slice(0, 4)}...{wallet.slice(38)}
           </div>
         </Tooltip>
