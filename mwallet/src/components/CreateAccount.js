@@ -7,6 +7,10 @@ import { ethers } from 'ethers'
 
 function CreateAccount({setWallet, setSeedPhrase}) {
   const [newSeedPhrase, setNewSeedPhrase] = useState(null);
+  const [step, setStep] = useState(1);  
+  const [password, setPassword] = useState("");
+  const [confimPassword, setConfirmPassword] = useState("");
+  const [showError, setShowError] = useState(false);  
   const navigate = useNavigate();
 
 
@@ -15,9 +19,21 @@ function CreateAccount({setWallet, setSeedPhrase}) {
     setNewSeedPhrase(mnemonic)
   }
 
+  function checkPassword() {
+    if(
+      password === "" ||
+      confimPassword === "" ||
+      password !== confimPassword
+    ) {
+      setShowError(true)
+      return;
+    } else {
+      setStep(2)
+    }
+  }
 
   function setWalletAndMnemonic() {
-    encryptAndSavePrivateKey('password', ethers.Wallet.fromPhrase(newSeedPhrase).privateKey)
+    encryptAndSavePrivateKey(password, ethers.Wallet.fromPhrase(newSeedPhrase).privateKey)
     setSeedPhrase(newSeedPhrase)
     setWallet(ethers.Wallet.fromPhrase(newSeedPhrase).address)
   }
@@ -62,7 +78,7 @@ function CreateAccount({setWallet, setSeedPhrase}) {
       salt: salt
     };
   }
-  
+
   function openDB() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('cryptoWalletDB', 1);
@@ -106,35 +122,71 @@ function CreateAccount({setWallet, setSeedPhrase}) {
 
   return (
     <>
-      <div className="content">
-        <h2 className="text-white font-bold text-[3rem]"> Arcane </h2>
-        <div className="mnemonic">
-          <ExclamationCircleOutlined style={{fontSize: "20px"}}/>
-          <div>
-            Once you generate the seed phrase, save it securely in order to recover your wallet in future.
-          </div>
+    {
+      step === 1 ?
+        <div className="content">
+          <h2 className="text-white font-bold text-[3rem]"> Arcane </h2>
+          <h3 className="text-white font-normal text-[1rem] m-10"> First input a password to protect your wallet</h3>
+          
+          <input
+            onChange={(e) => setPassword(e.target.value)} 
+            className="w-[90%] h-[4vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
+            type="password"
+            placeholder="Password"
+          />
+          <input
+            onChange={(e) => setConfirmPassword(e.target.value)} 
+            className="w-[90%] h-[4vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
+            type="password"
+            placeholder="Confirm Password"
+          />
+          {
+            showError ?
+              <p className="text-red-500">Passwords do not match</p>
+              :
+              <p className="text-red-500"></p>
+          }
+
+          <Button
+            className="w-[90%] h-[4vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+            type="primary"
+            onClick={() => checkPassword()}
+          >
+            Continue
+          </Button>
         </div>
-        <Button
-          className="w-[90%] h-[4vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
-          type="primary"
-          onClick={() => generateWallet()}
-        >
-          Generate Seed Phrase
-        </Button>
-        <Card className="seedPhraseContainer">
-          {newSeedPhrase && <pre style={{ whiteSpace: "pre-wrap" }}>{newSeedPhrase}</pre>}
-        </Card>
-        <Button
-          type="primary"
-          className="w-[90%] h-[4vh] hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
-          onClick={() => setWalletAndMnemonic()}
-        >
-          Open Your New Wallet
-        </Button>
-        <p className="frontPageButton" onClick={() => navigate("/")}>
-          Back Home
-        </p>
-      </div>
+      :
+        <div className="content">
+          <h2 className="text-white font-bold text-[3rem]"> Arcane </h2>
+          <div className="mnemonic">
+            <ExclamationCircleOutlined style={{fontSize: "20px"}}/>
+            <div>
+              Once you generate the seed phrase, save it securely in order to recover your wallet in future.
+            </div>
+          </div>
+          <Button
+            className="w-[90%] h-[4vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+            type="primary"
+            onClick={() => generateWallet()}
+          >
+            Generate Seed Phrase
+          </Button>
+          <Card className="seedPhraseContainer">
+            {newSeedPhrase && <pre style={{ whiteSpace: "pre-wrap" }}>{newSeedPhrase}</pre>}
+          </Card>
+          <Button
+            type="primary"
+            className="w-[90%] h-[4vh] hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+            onClick={() => setWalletAndMnemonic()}
+          >
+            Open Your New Wallet
+          </Button>
+          <p className="frontPageButton" onClick={() => navigate("/")}>
+            Back Home
+          </p>
+        </div>
+    }
+      
     </>
   );
 }
