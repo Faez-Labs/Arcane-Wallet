@@ -198,7 +198,7 @@ function Home({setWallet, setSeedPhrase}) {
                 Create a Wallet
                 </Button>
                 <Button
-                  onClick={() => retrieveAndDecryptPrivateKey('password')}
+                  onClick={() => navigate('/recover')}
                   className="w-[90%] h-[4vh] text-white bg-[#222222] border-[#222222] mt-5 text-[1.3rem]"
                   type="default"
                 >

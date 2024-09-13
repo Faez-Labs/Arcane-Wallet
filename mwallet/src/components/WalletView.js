@@ -53,16 +53,6 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
           ) : (
             <>
               <span>You seem to not have any tokens yet</span>
-              <p className="frontPageBottom">
-                Find Alt Coin Gems:{" "}
-                <a
-                  href="https://moralismoney.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  money.moralis.io
-                </a>
-              </p>
             </>
           )}
         </>
@@ -93,16 +83,6 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
           ) : (
             <>
               <span>You seem to not have any NFTs yet</span>
-              <p className="frontPageBottom">
-                Find Alt Coin Gems:{" "}
-                <a
-                  href="https://moralismoney.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  money.moralis.io
-                </a>
-              </p>
             </>
           )}
         </>
