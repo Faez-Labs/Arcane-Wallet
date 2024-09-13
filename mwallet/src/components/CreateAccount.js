@@ -17,13 +17,97 @@ function CreateAccount({setWallet, setSeedPhrase}) {
 
 
   function setWalletAndMnemonic() {
+    encryptAndSavePrivateKey('password', ethers.Wallet.fromPhrase(newSeedPhrase).privateKey)
     setSeedPhrase(newSeedPhrase)
     setWallet(ethers.Wallet.fromPhrase(newSeedPhrase).address)
+  }
+
+  async function encryptPrivateKey(password, privateKey) {
+    const encoder = new TextEncoder();
+    const passwordKey = await window.crypto.subtle.importKey(
+      "raw",
+      encoder.encode(password),
+      { name: "PBKDF2" },
+      false,
+      ["deriveKey"]
+    );
+    
+    const salt = window.crypto.getRandomValues(new Uint8Array(16)); // generate a random salt
+    const derivedKey = await window.crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt: salt,
+        iterations: 100000,
+        hash: "SHA-256"
+      },
+      passwordKey,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["encrypt"]
+    );
+  
+    const iv = window.crypto.getRandomValues(new Uint8Array(12)); // initialization vector
+    const encryptedPrivateKey = await window.crypto.subtle.encrypt(
+      {
+        name: "AES-GCM",
+        iv: iv
+      },
+      derivedKey,
+      encoder.encode(privateKey)
+    );
+  
+    return {
+      encryptedData: encryptedPrivateKey,
+      iv: iv,
+      salt: salt
+    };
+  }
+  
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('cryptoWalletDB', 1);
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('keys')) {
+          db.createObjectStore('keys', { keyPath: 'id' });
+        }
+      };
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
+      request.onerror = () => {
+        reject('Error opening IndexedDB');
+      };
+    });
+  }
+  
+  // Function to save encrypted private key in IndexedDB
+  async function saveEncryptedKeyToDB(encryptedData, iv, salt) {
+    const db = await openDB();
+    const transaction = db.transaction(['keys'], 'readwrite');
+    const store = transaction.objectStore('keys');
+  
+    const data = {
+      id: 'privateKey',
+      encryptedData: encryptedData,
+      iv: iv,
+      salt: salt
+    };
+  
+    store.put(data);
+    return transaction.complete;
+  }
+  
+  async function encryptAndSavePrivateKey(password, privateKey) {
+    const { encryptedData, iv, salt } = await encryptPrivateKey(password, privateKey);
+    await saveEncryptedKeyToDB(encryptedData, iv, salt);
+    console.log('Encrypted private key saved to IndexedDB');
   }
 
   return (
     <>
       <div className="content">
+        <h2 className="text-white font-bold text-[3rem]"> Arcane </h2>
         <div className="mnemonic">
           <ExclamationCircleOutlined style={{fontSize: "20px"}}/>
           <div>

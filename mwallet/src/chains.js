@@ -1,18 +1,18 @@
-const Ethereum = {
-    hex: '0x1',
-    name: 'Ethereum',
-    rpcUrl: '',
+const CrossFiTestnet = {
+    hex: '0x103D',
+    name: 'CrossFi Testnet',
+    rpcUrl: 'https://rpc.testnet.ms',
+    ticker: "XFI"
+};
+
+const SepoliaTestnet = {
+    hex: '0xaa36a7',
+    name: 'Sepolia Testnet',
+    rpcUrl: 'https://eth-sepolia.g.alchemy.com/v2/MfUnA2s_umweRKXbcFGe9jV7a9dEBX5a',
     ticker: "ETH"
 };
 
-const MumbaiTestnet = {
-    hex: '0x13881',
-    name: 'Mumbai Testnet',
-    rpcUrl: '',
-    ticker: "MATIC"
-};
-
 export const CHAINS_CONFIG = {
-    "0x1": Ethereum,
-    "0x13881": MumbaiTestnet,
+    "0x103D": CrossFiTestnet,
+    "0xaa36a7": SepoliaTestnet,
 };

@@ -1,7 +1,7 @@
 .App {
   text-align: center;
   width: 350px;
-  height: 550px;
+  height: 600px;
   justify-content: flex-start;
   align-items: center;
   display: flex;
@@ -68,7 +68,8 @@ header {
 }
 
 .dropdown {
-  margin-right: 20px;
+  margin-left: 20px;
+  display: flex;
 }
 
 .content {
