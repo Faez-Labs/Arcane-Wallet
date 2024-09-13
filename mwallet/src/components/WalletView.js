@@ -34,17 +34,14 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
                 itemLayout="horizontal"
                 dataSource={tokens}
                 renderItem={(item, index) => (
-                  <List.Item style={{ textAlign: "left" }}>
+                  <List.Item style={{ textAlign: "left", backgroundColor: "transparent", padding: "10px" }}>
                     <List.Item.Meta
                       avatar={<Avatar src={item.logo || logo} />}
-                      title={item.symbol}
-                      description={item.name}
+                      title={<span className="text-white text-2xl font-sans font-bold">{item.symbol}</span>}
+                      description={<span className="text-white text-2xl font-sans font-bold">{item.name}</span>}
                     />
-                    <div className="text-white">
-                      {(
-                        Number(item.balance)
-                      ).toFixed(2)}{" "}
-                      Tokens
+                    <div className="text-white text-xl font-sans font-bold">
+                      {(Number(item.balance)).toFixed(2)} Tokens
                     </div>
                   </List.Item>
                 )}
@@ -52,7 +49,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
             </>
           ) : (
             <>
-              <span>You seem to not have any tokens yet</span>
+              <span style={{ color: "white", fontSize: "18px" }}>You seem to not have any tokens yet</span>
             </>
           )}
         </>
@@ -164,15 +161,18 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
           password: '',  // Empty password because colon is used
         }
       });
+      console.log(response.data);
       const items = response.data.data.items;
       const formattedBalances = items.map(item => ({
         symbol: item.contract_ticker_symbol,
         balance: item.balance / Math.pow(10, item.contract_decimals),
-        logo: item.token_logo_url,
+        logo: item.logo_url,
         address: item.contract_address,
         decimals: item.contract_decimals,
       }));
       setTokens(formattedBalances);
+      const native = tokens.find((token) => token.symbol === "XFI");
+      setBalance(native.balance);
       setFetching(false);
     } catch (err) {
       console.log(err);
