@@ -7,7 +7,8 @@ import axios from 'axios';
 import { CHAINS_CONFIG } from '../chains';
 import { ethers, Contract, formatEther  } from 'ethers';
 import erc20Abi from '../erc20.json';
-
+import dotenv from 'dotenv';
+dotenv.config();
 function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain,}) {
  
   const navigate = useNavigate();
@@ -151,7 +152,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
     const decimals = await tokenContract.decimals();
     const url = `https://api.covalenthq.com/v1/crossfi-evm-testnet/address/${wallet}/balances_v2/`;
     try {
-      const apiKey = "cqt_rQKvDVYp7GpH9FGx6jh8kpDHcxgC";
+      const apiKey = process.env.GOLDRUSH;
       const response = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
