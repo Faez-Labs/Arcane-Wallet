@@ -7,8 +7,9 @@ import axios from 'axios';
 import { CHAINS_CONFIG } from '../chains';
 import { ethers, Contract, formatEther  } from 'ethers';
 import erc20Abi from '../erc20.json';
-import dotenv from 'dotenv';
-dotenv.config();
+
+import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
+
 function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain,}) {
  
   const navigate = useNavigate();
@@ -139,10 +140,17 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
       setSendToAddress(null);
      }
   }
-
+  
+  async function createWallet() {
+    const mnemonic = "soap taste cluster render violin piece wait found video rice calm weird";
+    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic);
+    const [firstAccount] = await wallet.getAccounts();
+    console.log("Wallet: ", firstAccount.address);
+  }
 
   async function getAccountTokens(){
     setFetching(true)
+    createWallet();
     const crossFiRPC = "https://rpc.testnet.ms";
     const provider = new ethers.JsonRpcProvider(crossFiRPC);
     const contractAddress = "0xdb5c548684221ce2f55f16456ec5cf43a028d8e9";
@@ -152,7 +160,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
     const decimals = await tokenContract.decimals();
     const url = `https://api.covalenthq.com/v1/crossfi-evm-testnet/address/${wallet}/balances_v2/`;
     try {
-      const apiKey = process.env.GOLDRUSH;
+      const apiKey = "cqt_rQT6MxC333DgTwwxPWPPr6FBJkGB";
       const response = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',

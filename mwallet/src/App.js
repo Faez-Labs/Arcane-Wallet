@@ -49,7 +49,7 @@ function App() {
       :
       
       <Routes>            
-        <Route path="/" element={<Home setWallet={setWallet} setSeedPhrase={setSeedPhrase} s/>}/>
+        <Route path="/" element={<Home setWallet={setWallet} setSeedPhrase={setSeedPhrase} />}/>
         <Route path="/recover" element={<RecoverAccount setSeedPhrase={setSeedPhrase} setWallet={setWallet}/>}/>
         <Route path="/yourwallet" element={<CreateAccount setSeedPhrase={setSeedPhrase} setWallet={setWallet} />} />
       </Routes>      
