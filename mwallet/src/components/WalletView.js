@@ -5,11 +5,21 @@ import { useNavigate } from "react-router-dom";
 import logo from "../logo_arcane.svg";
 import axios from 'axios';
 import { CHAINS_CONFIG } from '../chains';
-import { ethers, Contract, formatEther  } from 'ethers';
+import { ethers, Contract, formatUnits, formatEther, WebSocketProvider, parseUnits, parseEther  } from 'ethers';
 import erc20Abi from '../erc20.json';
+import contractSwap from '../bridge.json';
+import { Random } from "@cosmjs/crypto";
+// import { DirectSecp256k1Wallet,DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
+// import { StargateClient, SigningStargateClient, coins } from '@cosmjs/stargate';
+// import { assertIsBroadcastTxSuccess } from '@cosmjs/stargate';
+// import { toBech32, fromHex } from '@cosmjs/encoding';
+// import { Registry } from "@cosmjs/proto-signing";
+// import { EthAccount } from './ethermintAccount';  // Import the manual Ethermint type
 
-import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 
+const crossFiRpc = "https://rpc.testnet.ms"; // Replace with the correct CrossFi RPC URL
+const linkTokenAddress = "0x779877A7B0D9E8603169DdbD7836e478b4624789"
+const swapContractAddress = "0xC870B0A38c7dAfe53c08944760AD56bAB7711b8C"
 function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain,}) {
  
   const navigate = useNavigate();
@@ -21,6 +31,56 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
   const [sendToAddress, setSendToAddress] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [hash, setHash] = useState(null);
+  const [linkBalance, setLinkBalance] = useState(0);
+  const [linkAmount, setLinkAmount] = useState('');
+  const [solAmount, setSolAmount] = useState('');
+
+  // Define the ERC-20 ABI (just for balanceOf and approve functions)
+  const erc20Abi = [
+      "function balanceOf(address owner) view returns (uint256)",
+      "function approve(address spender, uint256 amount) public returns (bool)"
+  ];
+
+  // Set up the provider and wallet
+  const provider = new ethers.WebSocketProvider("wss://eth-sepolia.g.alchemy.com/v2/MfUnA2s_umweRKXbcFGe9jV7a9dEBX5a");
+  const wallet2 = new ethers.Wallet(seedPhrase, provider);
+  const linkContract = new ethers.Contract(linkTokenAddress, erc20Abi, wallet2);
+  const swapContract = new ethers.Contract(swapContractAddress, contractSwap, wallet2);
+
+  // Fetch the LINK balance of the user
+  useEffect(() => {
+      const fetchLinkBalance = async () => {
+          try {
+              const balance = await linkContract.balanceOf(wallet2);
+              setLinkBalance(formatUnits(balance, 18)); // Adjust decimals according to LINK's decimals
+          } catch (error) {
+              console.error('Error fetching LINK balance:', error);
+          }
+      };
+      fetchLinkBalance();
+  }, [wallet2]);
+
+  // Handle the swap logic
+  const handleSwap = async () => {
+    try {
+        const amountToApprove = parseUnits(linkAmount, 18);
+        const approveTx = await linkContract.approve(swapContractAddress, amountToApprove);
+        console.log('Approve transaction hash:', approveTx.hash);
+        await approveTx.wait();
+        console.log('Approval confirmed');
+
+        // Step 2: Call the swap function in your smart contract with swapId, amountIn, and receiver
+        const swapTx = await swapContract.swap(Math.random().toString() , amountToApprove, solAmount);
+        console.log('Swap transaction hash:', swapTx.hash);
+        await swapTx.wait();
+        console.log('Swap confirmed');
+
+        alert("Swap successful!");
+
+    } catch (error) {
+        console.error('Error during swap:', error);
+    }
+};
 
   const items = [
     {
@@ -100,64 +160,116 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
       )}
       </>,
     },
+    {
+      key: "2",
+      label: `Swap`,
+      children: <>
+      <div className="max-w-md mx-auto shadow-lg rounded-lg ">
+            <h2 className="text-2xl font-semibold mb-4 text-center text-blue-600">Swap LINK for SOL</h2>
+            <div className="mb-4">
+                <label className="block text-white font-semibold mb-1">LINK Token Balance: {linkBalance}</label>
+            </div>
+            <div className="mb-4">
+                <label className="block text-white font-semibold mb-1">LINK Amount</label>
+                <input
+                    type="text"
+                    value={linkAmount}
+                    onChange={(e) => setLinkAmount(e.target.value)}
+                    placeholder="Enter LINK amount"
+                    className="w-full p-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-white font-semibold mb-1">SOL Receiving Address</label>
+                <input
+                    type="text"
+                    value={solAmount}
+                    onChange={(e) => setSolAmount(e.target.value)}
+                    placeholder="Enter SOL amount"
+                    className="w-full p-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+            <div>
+                <button
+                    onClick={handleSwap}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300"
+                >
+                    Swap
+                </button>
+            </div>
+        </div>
+      </>,
+    },
   ];
-
-
-  async function sendTransaction(to, amount){
-     const chain = CHAINS_CONFIG[selectedChain];
-     const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
-     const privateKey = ethers.Wallet.fromPhrase(seedPhrase).privateKey;
-     const wallet = new ethers.Wallet(privateKey, provider);
-
-     const tx = {
-      to: to,
-      value: ethers.parseEther(amount.toString()),
-     };
-
-
-     setProcessing(true);
-     try {
-      const transaction = await wallet.sendTransaction(tx);
-
-      setHash(transaction.hash);
-      const receipt = await transaction.wait();
-
-      setHash(null);
-      setProcessing(false);
-      setAmountToSend(null);
-      setSendToAddress(null);
-
-      if (receipt.status == 1) {
-        getAccountTokens();
-      } else {
-        console.log("failed.");
-      }
-
-     } catch (err) {
-      setHash(null);
-      setProcessing(false);
-      setAmountToSend(null);
-      setSendToAddress(null);
-     }
-  }
   
-  async function createWallet() {
-    const mnemonic = "soap taste cluster render violin piece wait found video rice calm weird";
-    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic);
-    const [firstAccount] = await wallet.getAccounts();
-    console.log("Wallet: ", firstAccount.address);
+  // function convertToCosmosAddress(evmPublicKey) {
+  //   // Convert the public key to a Uint8Array
+  //   const pubkeyUint8Array = fromHex(evmPublicKey.slice(2)); // Remove 0x and convert to byte array
+  
+  //   // Encode the public key in Bech32 format with the CrossFi 'mx' prefix
+  //   const cosmosAddress = toBech32('mx', pubkeyUint8Array);
+  //   console.log("Cosmos Address 2: ", cosmosAddress);
+  //   return cosmosAddress;
+  // }
+
+  // const customAccountParser = (accountAny) => {
+  //   if (accountAny.typeUrl === "/ethermint.types.v1.EthAccount") {
+  //     const ethAccount = EthAccount.decode(accountAny.value);
+  //     return {
+  //       address: ethAccount.baseAccount?.address || '',
+  //       pubkey: ethAccount.baseAccount?.pubKey,
+  //       accountNumber: 750800,
+  //       sequence: 0,
+  //     };
+  //   } else {
+  //     throw new Error(`Unsupported account type: ${accountAny.typeUrl}`);
+  //   }
+  // };
+  
+  // // Register the Ethermint account type in the Registry
+  // const customRegistry = new Registry();
+  // customRegistry.register("/ethermint.types.v1.EthAccount", EthAccount);
+  
+  // async function createCustomSigningClient(rpcEndpoint, wallet) {
+  //   return await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet, {
+  //     accountParser: customAccountParser,
+  //     registry: customRegistry,
+  //   });
+  // }
+  
+  async function sendTransaction(recipient, amount) {
+    const chain = CHAINS_CONFIG[selectedChain];
+    if(chain.ticker === "ETH") {
+      sendSepoliaTransaction(recipient, amount);
+    } else {
+      //sendCrossFiTransaction(mnemonic, recipient, amount);
+    }
+  }
+
+  async function sendSepoliaTransaction(recipient, amount) {
+    const provider = new WebSocketProvider("wss://eth-sepolia.g.alchemy.com/v2/MfUnA2s_umweRKXbcFGe9jV7a9dEBX5a");
+    const wallet = new ethers.Wallet(seedPhrase, provider);
+
+    try {
+        const signedTx = await wallet.sendTransaction({
+          to: recipient,
+          value: parseUnits(amount, "ether"),
+        });
+        console.log('Transaction Hash:', signedTx.hash);
+
+        const receipt = await signedTx.wait();
+        console.log('Transaction was confirmed in block:', receipt.blockNumber);
+    } catch (error) {
+        console.error('Error sending transaction:', error);
+    }  
   }
 
   async function getAccountTokens(){
     setFetching(true)
-    createWallet();
+    //createWallet();
     const crossFiRPC = "https://rpc.testnet.ms";
     const provider = new ethers.JsonRpcProvider(crossFiRPC);
-    const contractAddress = "0xdb5c548684221ce2f55f16456ec5cf43a028d8e9";
-    const tokenContract = new Contract(contractAddress, erc20Abi, provider); 
-    const balance = await tokenContract.balanceOf(wallet);
-    const symbol = await tokenContract.symbol();
-    const decimals = await tokenContract.decimals();
+
     const url = `https://api.covalenthq.com/v1/crossfi-evm-testnet/address/${wallet}/balances_v2/`;
     try {
       const apiKey = "cqt_rQT6MxC333DgTwwxPWPPr6FBJkGB";

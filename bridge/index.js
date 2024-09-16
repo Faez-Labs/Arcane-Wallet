@@ -8,7 +8,7 @@ import { log } from 'console';
 import Moralis from 'moralis';
 
 const app = express();
-const port = 3000;
+const port = 3001;
 dotenv.config()
 // Create a WebSocket provider for the Sepolia test network
 const provider = new WebSocketProvider(process.env.WSS_SEPOLIA);

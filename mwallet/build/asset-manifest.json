@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/static/css/main.b973a0b8.css",
+    "main.js": "/static/js/main.99b36986.js",
+    "static/media/mwallet.png": "/static/media/mwallet.87c2865f70226b9dee70.png",
+    "static/media/logo_arcane.svg": "/static/media/logo_arcane.75d131efa7bcb5edd37950b01a217f1b.svg",
+    "index.html": "/index.html",
+    "main.b973a0b8.css.map": "/static/css/main.b973a0b8.css.map",
+    "main.99b36986.js.map": "/static/js/main.99b36986.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b973a0b8.css",
+    "static/js/main.99b36986.js"
+  ]
+}
