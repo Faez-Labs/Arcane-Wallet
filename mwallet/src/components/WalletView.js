@@ -9,15 +9,17 @@ import { ethers, Contract, formatUnits, formatEther, WebSocketProvider, parseUni
 import erc20Abi from '../erc20.json';
 import contractSwap from '../bridge.json';
 import { Random } from "@cosmjs/crypto";
-// import { DirectSecp256k1Wallet,DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
-// import { StargateClient, SigningStargateClient, coins } from '@cosmjs/stargate';
-// import { assertIsBroadcastTxSuccess } from '@cosmjs/stargate';
-// import { toBech32, fromHex } from '@cosmjs/encoding';
-// import { Registry } from "@cosmjs/proto-signing";
-// import { EthAccount } from './ethermintAccount';  // Import the manual Ethermint type
+import { DirectSecp256k1Wallet,DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
+import { StargateClient, SigningStargateClient, coins } from '@cosmjs/stargate';
+import { assertIsBroadcastTxSuccess } from '@cosmjs/stargate';
+import { stringToPath } from "@cosmjs/crypto";
+import { Registry } from "@cosmjs/proto-signing";
+import { EthAccount } from './ethermintAccount'; 
+import { toBech32, fromHex } from '@cosmjs/encoding';
 
-
-const crossFiRpc = "https://rpc.testnet.ms"; // Replace with the correct CrossFi RPC URL
+const COSMOS_HD_PATH = stringToPath("m/44'/118'/0'/0/0");
+const ETHEREUM_HD_PATH = stringToPath("m/44'/60'/0'/0/0");
+const HD_PATHS = [COSMOS_HD_PATH, ETHEREUM_HD_PATH];
 const linkTokenAddress = "0x779877A7B0D9E8603169DdbD7836e478b4624789"
 const swapContractAddress = "0xC870B0A38c7dAfe53c08944760AD56bAB7711b8C"
 function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain,}) {
@@ -34,6 +36,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
   const [linkBalance, setLinkBalance] = useState(0);
   const [linkAmount, setLinkAmount] = useState('');
   const [solAmount, setSolAmount] = useState('');
+  const [cosmosAddress, setCosmosAddress] = useState('');
 
   // Define the ERC-20 ABI (just for balanceOf and approve functions)
   const erc20Abi = [
@@ -202,15 +205,15 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
     },
   ];
   
-  // function convertToCosmosAddress(evmPublicKey) {
-  //   // Convert the public key to a Uint8Array
-  //   const pubkeyUint8Array = fromHex(evmPublicKey.slice(2)); // Remove 0x and convert to byte array
+  function convertToCosmosAddress(evmPublicKey) {
+    // Convert the public key to a Uint8Array
+    const pubkeyUint8Array = fromHex(evmPublicKey.slice(2)); // Remove 0x and convert to byte array
   
-  //   // Encode the public key in Bech32 format with the CrossFi 'mx' prefix
-  //   const cosmosAddress = toBech32('mx', pubkeyUint8Array);
-  //   console.log("Cosmos Address 2: ", cosmosAddress);
-  //   return cosmosAddress;
-  // }
+    // Encode the public key in Bech32 format with the CrossFi 'mx' prefix
+    const cosmosAddress = toBech32('mx', pubkeyUint8Array);
+    console.log("Cosmos Address 2: ", cosmosAddress);
+    return cosmosAddress;
+  }
 
   // const customAccountParser = (accountAny) => {
   //   if (accountAny.typeUrl === "/ethermint.types.v1.EthAccount") {
@@ -264,13 +267,24 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
     }  
   }
 
+  async function createWallet() {
+    const mnemonic = "soap taste cluster render violin piece wait found video rice calm weird"
+    const cosmosWallet = await DirectSecp256k1Wallet.fromKey(fromHex(seedPhrase.slice(2)), 'mx');
+      
+    const [cosmosAccount] = await cosmosWallet.getAccounts();
+
+    console.log("Cosmos Address:", cosmosAccount.address);
+  }
+
   async function getAccountTokens(){
     setFetching(true)
-    //createWallet();
+    setCosmosAddress(convertToCosmosAddress(wallet));
+    // createWallet();
+    // convertToCosmosAddress(wallet);
     const crossFiRPC = "https://rpc.testnet.ms";
     const provider = new ethers.JsonRpcProvider(crossFiRPC);
 
-    const url = `https://api.covalenthq.com/v1/crossfi-evm-testnet/address/${wallet}/balances_v2/`;
+    var url = `https://api.covalenthq.com/v1/crossfi-evm-testnet/address/${wallet}/balances_v2/`;
     try {
       const apiKey = "cqt_rQT6MxC333DgTwwxPWPPr6FBJkGB";
       const response = await axios.get(url, {
@@ -283,17 +297,58 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
         }
       });
       console.log(response.data);
-      const items = response.data.data.items;
-      const formattedBalances = items.map(item => ({
-        symbol: item.contract_ticker_symbol,
-        balance: item.balance / Math.pow(10, item.contract_decimals),
-        logo: item.logo_url,
-        address: item.contract_address,
-        decimals: item.contract_decimals,
-      }));
+      var items = response.data.data.items;
+      const formattedBalances = items
+        .map(item => ({
+          symbol: item.contract_ticker_symbol,
+          balance: item.balance / Math.pow(10, item.contract_decimals),
+          logo: item.logo_url,
+          address: item.contract_address,
+          decimals: item.contract_decimals,
+        }));
       setTokens(formattedBalances);
       const native = tokens.find((token) => token.symbol === "XFI");
       setBalance(native.balance);
+      //setFetching(false);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      //setLoading(false);
+    }
+    url = `https://api.covalenthq.com/v1/eth-sepolia/address/${wallet}/balances_v2/`;
+    try {
+      const apiKey = "cqt_rQT6MxC333DgTwwxPWPPr6FBJkGB";
+      const response = await axios.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        auth: {
+          username: apiKey,
+          password: '',  // Empty password because colon is used
+        }
+      });
+      console.log(response.data);
+      var items = response.data.data.items;
+      const formattedBalances = items
+        .filter(item => item.contract_ticker_symbol !== null)  // Filter out items with null symbol
+        .map(item => ({
+          symbol: item.contract_ticker_symbol,
+          balance: item.balance / Math.pow(10, item.contract_decimals),
+          logo: item.logo_url,
+          address: item.contract_address,
+          decimals: item.contract_decimals,
+        }));
+
+      // Check if tokens already contain the formattedBalances based on contract_address
+      const newBalances = formattedBalances.filter(formattedItem => 
+        !tokens.some(token => token.address === formattedItem.address)
+      );
+
+      // Concatenate the two arrays only if new balances are found
+      if (newBalances.length > 0) {
+        setTokens(tokens.concat(newBalances));
+      }
+
       setFetching(false);
     } catch (err) {
       console.log(err);
@@ -336,10 +391,16 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
         <div className="logoutButton" onClick={logout}>
           <LogoutOutlined />
         </div>
-        <div className="walletName">Wallet</div>
+        <div className="walletName">EVM Wallet</div>
         <Tooltip title={wallet}>
           <div className="text-white">
             {wallet.slice(0, 4)}...{wallet.slice(38)}
+          </div>
+        </Tooltip>
+        <div className="walletName">Cosmos Wallet</div>
+        <Tooltip title={cosmosAddress}>
+          <div className="text-white">
+            {cosmosAddress.slice(0, 4)}...{cosmosAddress.slice(38)}
           </div>
         </Tooltip>
         <Divider />
