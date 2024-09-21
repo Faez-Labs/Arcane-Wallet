@@ -9,5 +9,11 @@
   },
   "permissions": [
     "storage"
-  ]
+  ],
+  "icons": [
+    {
+        "src": "logo.png",
+        "sizes": "192x192"
+    }
+]
 }
