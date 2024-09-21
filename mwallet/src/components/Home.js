@@ -192,14 +192,14 @@ function Home({setWallet, setSeedPhrase}) {
               <div className="flex flex-col w-full justify-center items-center h-[80vh]">
                 <Button
                   onClick={() => navigate('/yourwallet')}
-                  className="w-[90%] h-[6vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+                  className="w-[90%] h-[60px] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
                   type="primary"
                 >
                 Create a Wallet
                 </Button>
                 <Button
                   onClick={() => navigate('/recover')}
-                  className="w-[90%] h-[6vh] text-white bg-[#222222] border-[#222222] mt-5 text-[1.3rem]"
+                  className="w-[90%] h-[60px] text-white bg-[#222222] border-[#222222] mt-5 text-[1.3rem]"
                   type="default"
                 >
                 Already have a Wallet   

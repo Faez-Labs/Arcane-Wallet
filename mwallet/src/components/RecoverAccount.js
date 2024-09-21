@@ -149,13 +149,13 @@ function RecoverAccount({ setWallet, setSeedPhrase }) {
           
           <input
             onChange={(e) => setPassword(e.target.value)} 
-            className="w-[90%] h-[5vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
+            className="w-[90%] h-[60px] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
             type="password"
             placeholder="Password"
           />
           <input
             onChange={(e) => setConfirmPassword(e.target.value)} 
-            className="w-[90%] h-[5vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
+            className="w-[90%] h-[60px] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
             type="password"
             placeholder="Confirm Password"
           />
@@ -167,7 +167,7 @@ function RecoverAccount({ setWallet, setSeedPhrase }) {
           }
 
           <Button
-            className="w-[90%] h-[5vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+            className="w-[90%] h-[60px] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
             type="primary"
             onClick={() => checkPassword()}
           >
@@ -188,17 +188,18 @@ function RecoverAccount({ setWallet, setSeedPhrase }) {
             rows={4}
             className="seedPhraseContainer"
             placeholder="Type your seed phrase here..."
+            color="white"
           />
           <Button
-            disabled = { typedSeed.split(" ").length !== 12 || typedSeed.slice(-1) === " " }
-            className="frontPageButton"
+            
+            className="w-[90%] h-[60px] hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
             type="primary"
             onClick={() => recoverWallet()}
           >
           Recover Wallet  
           </Button>  
           {nonValid && <p style={{ color: "red" }}> Invalid Seed Phrase </p>}
-          <p className="frontPageButton" onClick={() => navigate("/")}>
+          <p className="text-white mt-2 cursor-pointer" onClick={() => navigate("/")}>
             <span>Back Home</span>
           </p>
         </div>  

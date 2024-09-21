@@ -1,7 +1,7 @@
 {
   "name": "Arcane Wallet",
   "version": "1.0.0",
-  "description": "Crypto Wallet",
+  "description": "Cross Fi crypto wallet allowing cross chain token swapping.",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
@@ -10,10 +10,9 @@
   "permissions": [
     "storage"
   ],
-  "icons": [
-    {
-        "src": "logo.png",
-        "sizes": "192x192"
-    }
-]
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  }
 }
