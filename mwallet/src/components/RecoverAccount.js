@@ -145,17 +145,17 @@ function RecoverAccount({ setWallet, setSeedPhrase }) {
       step === 1 ?
         <div className="content">
           <h2 className="text-white font-bold text-[3rem]"> Arcane </h2>
-          <h3 className="text-white font-normal text-[1rem] m-10"> First input a password to protect your wallet</h3>
+          <h3 className="text-white font-normal text-[1rem] ml-5 mr-5 mb-8 mt-5"> First input a password to protect your wallet</h3>
           
           <input
             onChange={(e) => setPassword(e.target.value)} 
-            className="w-[90%] h-[4vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
+            className="w-[90%] h-[5vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
             type="password"
             placeholder="Password"
           />
           <input
             onChange={(e) => setConfirmPassword(e.target.value)} 
-            className="w-[90%] h-[4vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
+            className="w-[90%] h-[5vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
             type="password"
             placeholder="Confirm Password"
           />
@@ -167,7 +167,7 @@ function RecoverAccount({ setWallet, setSeedPhrase }) {
           }
 
           <Button
-            className="w-[90%] h-[4vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+            className="w-[90%] h-[5vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
             type="primary"
             onClick={() => checkPassword()}
           >

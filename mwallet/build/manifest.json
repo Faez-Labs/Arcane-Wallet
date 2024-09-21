@@ -1,7 +1,7 @@
 {
-  "name": "Salford Wallet",
+  "name": "Arcane Wallet",
   "version": "1.0.0",
-  "description": "Crypto Wallet Extension",
+  "description": "Crypto Wallet",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",

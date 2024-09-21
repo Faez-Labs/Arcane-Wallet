@@ -184,22 +184,22 @@ function Home({setWallet, setSeedPhrase}) {
             </>
             :
             <div className="content">
-              <div className="flex flex-row justify-center align-middle ">
+              <div className="flex flex-col justify-center align-middle items-center">
                   <img src={logo} className="headerLogo" alt="logo"/>
+                  <h2 className="text-white font-bold text-[3rem]"> Arcane </h2>
               </div>
-              <h2 className="text-white font-bold text-[3rem]"> Arcane </h2>
-              <h4 className="text-[#999999] font-semi text-[1.2rem] ml-5 mr-5">Welcome to Arcane, start by creating a wallet</h4>
-              <div className="flex flex-col w-full justify-center items-center h-[50vh]">
+              <h4 className="text-[#999999] font-semi text-[1.2rem] ml-5 mr-5">Welcome to Arcane.</h4>
+              <div className="flex flex-col w-full justify-center items-center h-[80vh]">
                 <Button
                   onClick={() => navigate('/yourwallet')}
-                  className="w-[90%] h-[4vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+                  className="w-[90%] h-[6vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
                   type="primary"
                 >
                 Create a Wallet
                 </Button>
                 <Button
                   onClick={() => navigate('/recover')}
-                  className="w-[90%] h-[4vh] text-white bg-[#222222] border-[#222222] mt-5 text-[1.3rem]"
+                  className="w-[90%] h-[6vh] text-white bg-[#222222] border-[#222222] mt-5 text-[1.3rem]"
                   type="default"
                 >
                 Already have a Wallet   
