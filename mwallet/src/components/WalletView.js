@@ -266,7 +266,6 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
         console.error('Error sending transaction:', error);
     }  
   }
-
   async function createWallet() {
     const mnemonic = "soap taste cluster render violin piece wait found video rice calm weird"
     const cosmosWallet = await DirectSecp256k1Wallet.fromKey(fromHex(seedPhrase.slice(2)), 'mx');
