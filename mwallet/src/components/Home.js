@@ -159,13 +159,13 @@ function Home({setWallet, setSeedPhrase}) {
                 <div className="flex flex-col w-full justify-center items-center h-[50vh]">
                   <input
                     onChange={(e) => setPassword(e.target.value)} 
-                    className="w-[90%] h-[4vh] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
+                    className="w-[90%] h-[60px] rounded-md p-4 text-white bg-[#222222] border-[#22c55e] border-2 mt-5 text-[1.3rem]"
                     type="password"
                     placeholder="Password"
                   />
                   <Button
                     onClick={() => retrieveAndDecryptPrivateKey(password)}
-                    className="w-[90%] h-[4vh] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
+                    className="w-[90%] h-[60px] text-neutral-800 font-bold bg-green-400 border-[#222222] mt-5 text-[1.3rem]"
                     type="primary"
                   >
                   Access Wallet

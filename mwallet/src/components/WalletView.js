@@ -45,7 +45,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
   ];
 
   // Set up the provider and wallet
-  const provider = new ethers.WebSocketProvider("wss://eth-sepolia.g.alchemy.com/v2/MfUnA2s_umweRKXbcFGe9jV7a9dEBX5a");
+  const provider = new ethers.WebSocketProvider("YOUR PROVIDER URL");
   const wallet2 = new ethers.Wallet(seedPhrase, provider);
   const linkContract = new ethers.Contract(linkTokenAddress, erc20Abi, wallet2);
   const swapContract = new ethers.Contract(swapContractAddress, contractSwap, wallet2);
@@ -286,7 +286,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
 
     var url = `https://api.covalenthq.com/v1/crossfi-evm-testnet/address/${wallet}/balances_v2/`;
     try {
-      const apiKey = "cqt_rQT6MxC333DgTwwxPWPPr6FBJkGB";
+      const apiKey = "  COVALET API KEY";
       const response = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
