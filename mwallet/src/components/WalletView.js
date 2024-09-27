@@ -316,7 +316,7 @@ function WalletView({wallet, setWallet, seedPhrase, setSeedPhrase, selectedChain
     }
     url = `https://api.covalenthq.com/v1/eth-sepolia/address/${wallet}/balances_v2/`;
     try {
-      const apiKey = "cqt_rQT6MxC333DgTwwxPWPPr6FBJkGB";
+      const apiKey = "";
       const response = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
