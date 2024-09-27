@@ -1,3 +1,4 @@
 <!-- ABOUT THE PROJECT -->
-# About The Project
+# Arcane Wallet
+[Project website](https://www.arcanewallet.xyz)
 
